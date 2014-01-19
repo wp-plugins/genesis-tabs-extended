@@ -11,8 +11,13 @@ Extended version of the Genesis Tabs plugin from Studiopress. Make selected post
 
 == Description ==
 
+Extended version of the Genesis Tabs plugin from Studiopress. Make selected posts unique on the page. And more...
+
+
+
+
 = Credits =
-Extended version of the Genesis Tabs plugin from Studiopress ! All credits go to them.
+Extended version of the Genesis Tabs plugin from Studiopress ! Much of the credits go to them.
 
 Credits: nathanrice, studiopress and Ron Rennick
 
@@ -32,10 +37,13 @@ and you can add additional categories that always have to be excluded, when doin
 tabbed category
 
 = What's the extra =
-The extra feature in this plugin is that you can select that every post has to be unique on the presented page.
-It will even check if the post is uniquely taken when also in other selected tab categories.
+The extra features in this plugin are:
 
-It basically adds the unique feature, while it is also available in the Genesis Featured Post widget in the Genesis Theme (version 2)
+* Select every post to be unique on the presented web page
+* Exclude posts from being selected in any of the tabs
+
+
+It basically adds the "show unique on page" feature, because it is also part of the Genesis Featured Post widget in the Genesis Theme (version 2).
 
 = How it works =
 
@@ -43,12 +51,16 @@ It basically adds the unique feature, while it is also available in the Genesis 
 nothing new here
 
 = Don't include posts from these categories =
-Let's say that a certain is picked to be put in the tab, but it also in one of the following categories,
-it will be skipped. It could be used if you have a category "headlines" and a post is in this category and in
-the category "art" and "headlines" is selected here, it would skip the article when category "art" is selected
-as one of the categories for your tabs.
+
+Let's assume that a certain category is selected to be posted in the tab, but a selected post from this category is also in 
+one of the "Don't include" categories, this post will be skipped. 
+
+This could be usefull if you have a category "headlines" and some post is in that category and in a category called "art" and 
+"headlines" is in the "Don't include" selection here, that post would skipped if the category "art" is selected as one of the categories 
+for your tabs.
 
 = Don't show the same post more than once. =
+
 Well that makes everything unique. But this is how it will work:
 
 * You selected for tab 1 category X, that has posts A, B
@@ -58,7 +70,6 @@ Well that makes everything unique. But this is how it will work:
 * Tab 1 will show post B (for A is also in a non display category).
 * Tab 2 will show post D (for A is non display, B is in tab 1 and C is in non display)
 * Tab 3 will show nothing for there are no posts left to show
-
 
 == Installation ==
 
@@ -80,4 +91,4 @@ Well that makes everything unique. But this is how it will work:
 
 == Screenshots ==
 
-1. The extended plugin extra options dialog
+1. The extended plugin additional options dialog
