@@ -3,7 +3,7 @@ Contributors: jvandemerwe
 Tags: tabs, ui-tabs, genesis, genesiswp, studiopress
 Requires at least: 3.7
 Tested up to: 3.7.1
-Stable tag: 1.0
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,9 +12,6 @@ Extended version of the Genesis Tabs plugin from Studiopress. Make selected post
 == Description ==
 
 Extended version of the Genesis Tabs plugin from Studiopress. Make selected posts unique on the page. And more...
-
-
-
 
 = Credits =
 Extended version of the Genesis Tabs plugin from Studiopress ! Much of the credits go to them.
@@ -85,6 +82,9 @@ Well that makes everything unique. But this is how it will work:
 <a href="http://www.enovision.net/contact/">http://www.enovision.net/contact/</a> and drop your question.
 
 == Changelog ==
+
+= 1.1 =
+* Added option to have the most recent post (despite other option settings) shown in the first tab
 
 = 1.0 =
 * Initial release
