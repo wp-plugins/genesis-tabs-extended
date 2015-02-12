@@ -3,13 +3,15 @@ Contributors: jvandemerwe
 Tags: tabs, ui-tabs, genesis, genesiswp, studiopress
 Requires at least: 3.7
 Tested up to: 3.7.1
-Stable tag: 1.1
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Extended version of the Genesis Tabs plugin from Studiopress. Make selected posts unique on the page. And more...
 
 == Description ==
+
+**** This version replaces version 1.1 and repairs an awful bug that broke proper working of this plugin ****
 
 Extended version of the Genesis Tabs plugin from Studiopress. Make selected posts unique on the page. And more...
 
@@ -82,6 +84,9 @@ Well that makes everything unique. But this is how it will work:
 <a href="http://www.enovision.net/contact/">http://www.enovision.net/contact/</a> and drop your question.
 
 == Changelog ==
+
+= 1.1.1 =
+* Solves a (breaking) bug that would lead to problems when there were no categories excluded. 
 
 = 1.1 =
 * Added option to have the most recent post (despite other option settings) shown in the first tab

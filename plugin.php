@@ -9,7 +9,7 @@
   Author: StudioPress / Johan van de Merwe
   Author URI: http://www.enovision.net/genesis-tabs-extended/
 
-  Version: 1.1
+  Version: 1.1.1
 
   License: GNU General Public License v2.0 (or later)
   License URI: http://www.opensource.org/licenses/gpl-license.php
@@ -165,6 +165,7 @@ class Genesis_Tabs_Extended_Widget extends WP_Widget
         echo '</ul>';
 
         // Loop through all chosen categories
+
         foreach ((array)$cats as $idx => $cat) :
 
             if (!$cat)
@@ -180,10 +181,16 @@ class Genesis_Tabs_Extended_Widget extends WP_Widget
 
                 $exclude_cp = $exclude; // make a copy first
 
-                while ($idx !== false) {
-                    $idx = array_search($cat, $exclude_cp);
-                    if ($idx !== false)
-                        unset($exclude_cp[$idx]);
+		if (is_array($exclude_cp) === false) {
+                   $exclude_cp = array();
+                }
+
+		$found = true;
+                while ($found !== false) {
+                    $found = array_search($cat, $exclude_cp);
+                    if ($found !== false) {
+                        unset($exclude_cp[$found]);
+                    }
                 }
 
                 if (count($exclude_cp) > 0) {
@@ -193,10 +200,10 @@ class Genesis_Tabs_Extended_Widget extends WP_Widget
                 if ($instance['exclude_displayed']) {
                     $args['post__not_in'] = (array)$_genesis_displayed_ids;
                 }
-
             }
 
             $tabbed_posts = new WP_Query($args);
+
 
             if ($tabbed_posts->have_posts()) : while ($tabbed_posts->have_posts()) : $tabbed_posts->the_post();
 
@@ -222,7 +229,7 @@ class Genesis_Tabs_Extended_Widget extends WP_Widget
 
                     if ('excerpt' == $instance['show_content']) :
                         the_excerpt();
-                    elseif ('content - limit' == $instance['show_content']) :
+                    elseif ('content-limit' == $instance['show_content']) :
                         the_content_limit((int)$instance['content_limit'], esc_html($instance['more_text']));
                     else :
                         the_content(esc_html($instance['more_text']));
