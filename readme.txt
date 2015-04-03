@@ -3,7 +3,7 @@ Contributors: jvandemerwe
 Tags: tabs, ui-tabs, genesis, genesiswp, studiopress
 Requires at least: 3.7
 Tested up to: 3.7.1
-Stable tag: 1.2
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,7 +90,7 @@ for that tab.
 
 == Changelog ==
 
-= 1.2 =
+= 1.2.1 =
 * Added the featured image required for selection option
 * Pimped the options page for the widget settings
 
