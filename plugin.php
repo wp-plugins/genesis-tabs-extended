@@ -127,6 +127,8 @@ class Genesis_Tabs_Extended_Widget extends WP_Widget
             'posts_cat_8' => '',
             'exclude_displayed' => 0,
             'excluded_categories' => '',
+            'with_thumb' => 0,
+            'with_thumb_last' => 0,
             'first_tab_recent' => 0,
             'first_tab_recent_header' => '',
             'show_image' => 0,
@@ -179,13 +181,17 @@ class Genesis_Tabs_Extended_Widget extends WP_Widget
 
                 $args['cat'] = $cat;
 
-                $exclude_cp = $exclude; // make a copy first
-
-		if (is_array($exclude_cp) === false) {
-                   $exclude_cp = array();
+                if ($instance['with_thumb']) {
+                    $arg['meta_query'] = array(array('key' => '_thumbnail_id'));
                 }
 
-		$found = true;
+                $exclude_cp = $exclude; // make a copy first
+
+                if (is_array($exclude_cp) === false) {
+                    $exclude_cp = array();
+                }
+
+                $found = true;
                 while ($found !== false) {
                     $found = array_search($cat, $exclude_cp);
                     if ($found !== false) {
@@ -200,10 +206,15 @@ class Genesis_Tabs_Extended_Widget extends WP_Widget
                 if ($instance['exclude_displayed']) {
                     $args['post__not_in'] = (array)$_genesis_displayed_ids;
                 }
+            } else {
+
+                if ($instance['with_thumb'] && $instance['with_thumb_last']) {
+                    $args['meta_query'] = array(array('key' => '_thumbnail_id'));
+                }
+
             }
 
             $tabbed_posts = new WP_Query($args);
-
 
             if ($tabbed_posts->have_posts()) : while ($tabbed_posts->have_posts()) : $tabbed_posts->the_post();
 
@@ -248,234 +259,259 @@ class Genesis_Tabs_Extended_Widget extends WP_Widget
         wp_reset_query();
     }
 
-/** Update hook */
-function update($new_instance, $old_instance)
-{
-    return $new_instance;
-}
+    /** Update hook */
+    function update($new_instance, $old_instance)
+    {
+        return $new_instance;
+    }
 
-/** Form output */
-function form($instance)
-{
+    /** Form output */
+    function form($instance)
+    {
 
-    // ensure value exists
-    $instance = wp_parse_args((array)$instance, array(
-        'title' => '',
-        'posts_cat_1' => '',
-        'posts_cat_2' => '',
-        'posts_cat_3' => '',
-        'posts_cat_4' => '',
-        'posts_cat_5' => '',
-        'posts_cat_6' => '',
-        'posts_cat_7' => '',
-        'posts_cat_8' => '',
-        'exclude_displayed' => '',
-        'excluded_categories' => '', // excluded categories
-        'first_tab_recent' => '',
-        'first_tab_recent_header' => '',
-        'show_image' => 0,
-        'image_alignment' => '',
-        'image_size' => '',
-        'show_title' => 0,
-        'show_byline' => 0,
-        'post_info' => '[post_date] ' . __('By', 'genesis') . ' [post_author_posts_link] [post_comments]',
-        'show_content' => 'excerpt',
-        'content_limit' => '',
-        'more_text' => __('[Read More...]', 'genesis')
-    ));
-    ?>
+        // ensure value exists
+        $instance = wp_parse_args((array)$instance, array(
+            'title' => '',
+            'posts_cat_1' => '',
+            'posts_cat_2' => '',
+            'posts_cat_3' => '',
+            'posts_cat_4' => '',
+            'posts_cat_5' => '',
+            'posts_cat_6' => '',
+            'posts_cat_7' => '',
+            'posts_cat_8' => '',
+            'exclude_displayed' => '',
+            'excluded_categories' => '', // excluded categories
+            'with_thumb' => '',
+            'with_thumb_last' => '',
+            'first_tab_recent' => '',
+            'first_tab_recent_header' => '',
+            'show_image' => 0,
+            'image_alignment' => '',
+            'image_size' => '',
+            'show_title' => 0,
+            'show_byline' => 0,
+            'post_info' => '[post_date] ' . __('By', 'genesis') . ' [post_author_posts_link] [post_comments]',
+            'show_content' => 'excerpt',
+            'content_limit' => '',
+            'more_text' => __('[Read More...]', 'genesis')
+        ));
+        ?>
 
-    <p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title', 'genesis'); ?>:</label>
-        <input type="text" id="<?php echo $this->get_field_id('title'); ?>"
-               name="<?php echo $this->get_field_name('title'); ?>"
-               value="<?php echo esc_attr($instance['title']); ?>" style="width:95%;"/></p>
+        <p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title', 'genesis'); ?>:</label>
+            <input type="text" id="<?php echo $this->get_field_id('title'); ?>"
+                   name="<?php echo $this->get_field_name('title'); ?>"
+                   value="<?php echo esc_attr($instance['title']); ?>" style="width:95%;"/></p>
 
-    <div class="genesis-widget-column-right">
+        <div class="genesis-widget-column genesis-widget-column-left">
 
-        <div class="genesis-widget-column-box">
+            <div class="genesis-widget-column-box">
 
-            <p><span class="description">Recent post in first Tab?</em></span></p>
+                <p><span class="description">Recent post in first Tab?</em></span></p>
 
-            <p>
-                <input id="<?php echo $this->get_field_id('first_tab_recent'); ?>" type="checkbox"
-                       name="<?php echo $this->get_field_name('first_tab_recent'); ?>"
-                       value="1" <?php checked($instance['first_tab_recent']); ?>/>
-                <label
-                    for="<?php echo $this->get_field_id('first_tab_recent'); ?>"><?php _e('Show most recent post in first tab ? ', 'genesis'); ?></label>
-            </p>
+                <p>
+                    <input id="<?php echo $this->get_field_id('first_tab_recent'); ?>" type="checkbox"
+                           name="<?php echo $this->get_field_name('first_tab_recent'); ?>"
+                           value="1" <?php checked($instance['first_tab_recent']); ?>/>
+                    <label
+                        for="<?php echo $this->get_field_id('first_tab_recent'); ?>"><?php _e('Show most recent post in first tab ? ', 'genesis'); ?></label>
+                </p>
 
-            <p><label
-                    for="<?php echo $this->get_field_id('first_tab_recent_header'); ?>"><?php _e('First Tab Header', 'genesis'); ?>
-                    :</label>
-                <input type="text" id="<?php echo $this->get_field_id('first_tab_recent_header'); ?>"
-                       name="<?php echo $this->get_field_name('first_tab_recent_header'); ?>"
-                       value="<?php echo esc_attr($instance['first_tab_recent_header']); ?>" style="width:95%;"/>
-            </p>
+                <p><label
+                        for="<?php echo $this->get_field_id('first_tab_recent_header'); ?>"><?php _e('First Tab Header', 'genesis'); ?>
+                        :</label>
+                    <input type="text" id="<?php echo $this->get_field_id('first_tab_recent_header'); ?>"
+                           name="<?php echo $this->get_field_name('first_tab_recent_header'); ?>"
+                           value="<?php echo esc_attr($instance['first_tab_recent_header']); ?>" style="width:95%;"/>
+                </p>
 
-            <p><span class="description">Choose up to 8 categories to pull posts from.<br/> Each category you choose will represent a single tab.</span>
-            </p>
+                <p><span class="description">Choose up to 8 categories to pull posts from.<br/> Each category you choose will represent a single tab.</span>
+                </p>
 
-            <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_1'), 'selected' => $instance['posts_cat_1'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
-            </p>
+                <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_1'), 'selected' => $instance['posts_cat_1'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
+                </p>
 
-            <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_2'), 'selected' => $instance['posts_cat_2'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
-            </p>
+                <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_2'), 'selected' => $instance['posts_cat_2'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
+                </p>
 
-            <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_3'), 'selected' => $instance['posts_cat_3'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
-            </p>
+                <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_3'), 'selected' => $instance['posts_cat_3'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
+                </p>
 
-            <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_4'), 'selected' => $instance['posts_cat_4'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
-            </p>
+                <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_4'), 'selected' => $instance['posts_cat_4'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
+                </p>
 
-            <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_5'), 'selected' => $instance['posts_cat_5'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
-            </p>
+                <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_5'), 'selected' => $instance['posts_cat_5'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
+                </p>
 
-            <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_6'), 'selected' => $instance['posts_cat_6'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
-            </p>
+                <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_6'), 'selected' => $instance['posts_cat_6'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
+                </p>
 
-            <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_7'), 'selected' => $instance['posts_cat_7'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
-            </p>
+                <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_7'), 'selected' => $instance['posts_cat_7'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
+                </p>
 
-            <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_8'), 'selected' => $instance['posts_cat_8'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
-            </p>
+                <p><?php wp_dropdown_categories(array('name' => $this->get_field_name('posts_cat_8'), 'selected' => $instance['posts_cat_8'], 'orderby' => 'Name', 'hierarchical' => 1, 'show_option_all' => __("- None Selected -", 'genesis'), 'hide_empty' => '0')); ?>
+                </p>
 
-            <p><span class="description">Don't include posts from these categories < br /><em>if post is in more
-                        than
-                        one category, it is not used when it is in one of the selected categories below
-                        .</em></span>
-            </p>
+                <p><span class="description">Don't include posts from these categories <br/><em>if post is in more
+                            than
+                            one category, it is not used when it is in one of the selected categories below
+                            .</em></span>
+                </p>
 
-            <ul>
-                <?php
-                $excluded_categories = $instance['excluded_categories'];
-
-                $wp_categories = get_categories();
-
-                foreach ($wp_categories as $idx => $cat) {
-
-                    $field = $this->get_field_name('excluded_categories');
-                    $id = $this->get_field_id('excluded_categories');
-
-                    $checked = in_array($cat->term_id, $excluded_categories) ? ' checked="1"' : '';
-
-                    echo '<li id="category-"' . $cat->term_id . '>';
-                    echo '<input id="' . $id . '"' .
-                        ' type="checkbox" name="' . $field . '[' . $idx . ']"' .
-                        ' value="' . $cat->term_id . '"' . $checked . '/>';
-                    echo '<label for="' . $id . '">' . $cat->name . '</label>';
-                    echo '</li>';
-                }
-                ?>
-            </ul>
-
-            <p><span class="description">Don't show the same post more than once.</em></span></p>
-
-            <p>
-                <input id="<?php echo $this->get_field_id('exclude_displayed'); ?>" type="checkbox"
-                       name="<?php echo $this->get_field_name('exclude_displayed'); ?>"
-                       value="1" <?php checked($instance['exclude_displayed']); ?>/>
-                <label
-                    for="<?php echo $this->get_field_id('exclude_displayed'); ?>"><?php _e('Exclude Previously Displayed Posts?', 'genesis'); ?></label>
-            </p>
-
-        </div>
-
-    </div>
-
-    <div class="genesis-widget-column genesis-widget-column-right">
-
-        <div class="genesis-widget-column-box genesis-widget-column-box-top">
-
-            <p><input id="<?php echo $this->get_field_id('show_image'); ?>" type="checkbox"
-                      name="<?php echo $this->get_field_name('show_image'); ?>"
-                      value="1" <?php checked(1, $instance['show_image']); ?>/> <label
-                    for="<?php echo $this->get_field_id('show_image'); ?>"><?php _e('Show Featured Image', 'genesis'); ?></label>
-            </p>
-
-            <p><label for="<?php echo $this->get_field_id('image_size'); ?>"><?php _e('Image Size', 'genesis'); ?>
-                    :</label>
-                <?php $sizes = genesis_get_additional_image_sizes(); ?>
-                <select id="<?php echo $this->get_field_id('image_size'); ?>"
-                        name="<?php echo $this->get_field_name('image_size'); ?>">
-                    <option value="thumbnail">thumbnail (<?php echo get_option('thumbnail_size_w'); ?>
-                        x<?php echo get_option('thumbnail_size_h'); ?>)
-                    </option>
+                <ul>
                     <?php
-                    foreach ((array)$sizes as $name => $size) :
-                        echo '<option value="' . esc_attr($name) . '" ' . selected($name, $instance['image_size'], FALSE) . '>' . esc_html($name) . ' (' . $size['width'] . 'x' . $size['height'] . ')</option>';
-                    endforeach;
+                    $excluded_categories = $instance['excluded_categories'];
+
+                    $wp_categories = get_categories();
+
+                    foreach ($wp_categories as $idx => $cat) {
+
+                        $field = $this->get_field_name('excluded_categories');
+                        $id = $this->get_field_id('excluded_categories');
+
+                        $checked = in_array($cat->term_id, $excluded_categories) ? ' checked="1"' : '';
+
+                        echo '<li id="category-"' . $cat->term_id . '>';
+                        echo '<input id="' . $id . '"' .
+                            ' type="checkbox" name="' . $field . '[' . $idx . ']"' .
+                            ' value="' . $cat->term_id . '"' . $checked . '/>';
+                        echo '<label for="' . $id . '">' . $cat->name . '</label>';
+                        echo '</li>';
+                    }
                     ?>
-                </select></p>
+                </ul>
 
-            <p><label
-                    for="<?php echo $this->get_field_id('image_alignment'); ?>"><?php _e('Image Alignment', 'genesis'); ?>
-                    :</label>
-                <select id="<?php echo $this->get_field_id('image_alignment'); ?>"
-                        name="<?php echo $this->get_field_name('image_alignment'); ?>">
-                    <option value="">- <?php _e('None', 'genesis'); ?> -</option>
-                    <option
-                        value="alignleft" <?php selected('alignleft', $instance['image_alignment']); ?>><?php _e('Left', 'genesis'); ?></option>
-                    <option
-                        value="alignright" <?php selected('alignright', $instance['image_alignment']); ?>><?php _e('Right', 'genesis'); ?></option>
-                </select></p>
+
+            </div>
 
         </div>
 
-        <div class="genesis-widget-column-box">
+        <div class="genesis-widget-column genesis-widget-column-right">
 
-            <p><input id="<?php echo $this->get_field_id('show_title'); ?>" type="checkbox"
-                      name="<?php echo $this->get_field_name('show_title'); ?>"
-                      value="1" <?php checked(1, $instance['show_title']); ?>/> <label
-                    for="<?php echo $this->get_field_id('show_title'); ?>"><?php _e('Show Post Title', 'genesis'); ?></label>
-            </p>
+            <div class="genesis-widget-column-box genesis-widget-column-box">
 
-            <p><input id="<?php echo $this->get_field_id('show_byline'); ?>" type="checkbox"
-                      name="<?php echo $this->get_field_name('show_byline'); ?>"
-                      value="1" <?php checked(1, $instance['show_byline']); ?>/> <label
-                    for="<?php echo $this->get_field_id('show_byline'); ?>"><?php _e('Show Post Info', 'genesis'); ?></label>
+                <p><span class="description">Don't show the same post more than once.</em></span></p>
 
-                <input type="text" id="<?php echo $this->get_field_id('post_info'); ?>"
-                       name="<?php echo $this->get_field_name('post_info'); ?>"
-                       value="<?php echo esc_attr($instance['post_info']); ?>" class="widefat"/>
+                <p>
+                    <input id="<?php echo $this->get_field_id('exclude_displayed'); ?>" type="checkbox"
+                           name="<?php echo $this->get_field_name('exclude_displayed'); ?>"
+                           value="1" <?php checked($instance['exclude_displayed']); ?>/>
+                    <label
+                        for="<?php echo $this->get_field_id('exclude_displayed'); ?>"><?php _e('Exclude Previously Displayed Posts?', 'genesis'); ?></label>
+                </p>
 
-            </p>
+                <p><span class="description">Select only posts with featured image?</em></span></p>
 
-            <p><label
-                    for="<?php echo $this->get_field_id('show_content'); ?>"><?php _e('Content Type', 'genesis'); ?>
-                    :</label>
-                <select id="<?php echo $this->get_field_id('show_content'); ?>"
-                        name="<?php echo $this->get_field_name('show_content'); ?>">
-                    <option
-                        value="content" <?php selected('content', $instance['show_content']); ?>><?php _e('Show Content', 'genesis'); ?></option>
-                    <option
-                        value="excerpt" <?php selected('excerpt', $instance['show_content']); ?>><?php _e('Show Excerpt', 'genesis'); ?></option>
-                    <option
-                        value="content-limit" <?php selected('content-limit', $instance['show_content']); ?>><?php _e('Show Content Limit', 'genesis'); ?></option>
-                    <option
-                        value="" <?php selected('', $instance['show_content']); ?>><?php _e('No Content', 'genesis'); ?></option>
-                </select>
+                <p>
+                    <input id="<?php echo $this->get_field_id('with_thumb'); ?>" type="checkbox"
+                           name="<?php echo $this->get_field_name('with_thumb'); ?>"
+                           value="1" <?php checked($instance['with_thumb']); ?>/>
+                    <label
+                        for="<?php echo $this->get_field_id('with_thumb'); ?>"><?php _e('Select only posts with featured image', 'genesis'); ?></label>
+                </p>
 
-                <br/><label
-                    for="<?php echo $this->get_field_id('content_limit'); ?>"><?php _e('Limit content to', 'genesis'); ?></label>
-                <input type="text" id="<?php echo $this->get_field_id('image_alignment'); ?>"
-                       name="<?php echo $this->get_field_name('content_limit'); ?>"
-                       value="<?php echo esc_attr(intval($instance['content_limit'])); ?>"
-                       size="3"/> <?php _e('characters', 'genesis'); ?></p>
+                <p>
+                    <input id="<?php echo $this->get_field_id('with_thumb_last'); ?>" type="checkbox"
+                           name="<?php echo $this->get_field_name('with_thumb_last'); ?>"
+                           value="1" <?php checked($instance['with_thumb_last']); ?>/>
+                    <label
+                        for="<?php echo $this->get_field_id('with_thumb_last'); ?>"><?php _e('This also counts for the latest post?', 'genesis'); ?></label>
+                </p>
 
-            <p><label
-                    for="<?php echo $this->get_field_id('more_text'); ?>"><?php _e('More Text (if applicable)', 'genesis'); ?>
-                    :</label>
-                <input type="text" id="<?php echo $this->get_field_id('more_text'); ?>"
-                       name="<?php echo $this->get_field_name('more_text'); ?>"
-                       value="<?php echo esc_attr($instance['more_text']); ?>"/></p>
+            </div>
+
+            <div class="genesis-widget-column-box genesis-widget-column-box">
+
+                <p><input id="<?php echo $this->get_field_id('show_image'); ?>" type="checkbox"
+                          name="<?php echo $this->get_field_name('show_image'); ?>"
+                          value="1" <?php checked(1, $instance['show_image']); ?>/> <label
+                        for="<?php echo $this->get_field_id('show_image'); ?>"><?php _e('Show Featured Image', 'genesis'); ?></label>
+                </p>
+
+                <p><label for="<?php echo $this->get_field_id('image_size'); ?>"><?php _e('Image Size', 'genesis'); ?>
+                        :</label>
+                    <?php $sizes = genesis_get_additional_image_sizes(); ?>
+                    <select id="<?php echo $this->get_field_id('image_size'); ?>"
+                            name="<?php echo $this->get_field_name('image_size'); ?>">
+                        <option value="thumbnail">thumbnail (<?php echo get_option('thumbnail_size_w'); ?>
+                            x<?php echo get_option('thumbnail_size_h'); ?>)
+                        </option>
+                        <?php
+                        foreach ((array)$sizes as $name => $size) :
+                            echo '<option value="' . esc_attr($name) . '" ' . selected($name, $instance['image_size'], FALSE) . '>' . esc_html($name) . ' (' . $size['width'] . 'x' . $size['height'] . ')</option>';
+                        endforeach;
+                        ?>
+                    </select></p>
+
+                <p><label
+                        for="<?php echo $this->get_field_id('image_alignment'); ?>"><?php _e('Image Alignment', 'genesis'); ?>
+                        :</label>
+                    <select id="<?php echo $this->get_field_id('image_alignment'); ?>"
+                            name="<?php echo $this->get_field_name('image_alignment'); ?>">
+                        <option value="">- <?php _e('None', 'genesis'); ?> -</option>
+                        <option
+                            value="alignleft" <?php selected('alignleft', $instance['image_alignment']); ?>><?php _e('Left', 'genesis'); ?></option>
+                        <option
+                            value="alignright" <?php selected('alignright', $instance['image_alignment']); ?>><?php _e('Right', 'genesis'); ?></option>
+                    </select></p>
+
+            </div>
+
+            <div class="genesis-widget-column-box">
+
+                <p><input id="<?php echo $this->get_field_id('show_title'); ?>" type="checkbox"
+                          name="<?php echo $this->get_field_name('show_title'); ?>"
+                          value="1" <?php checked(1, $instance['show_title']); ?>/> <label
+                        for="<?php echo $this->get_field_id('show_title'); ?>"><?php _e('Show Post Title', 'genesis'); ?></label>
+                </p>
+
+                <p><input id="<?php echo $this->get_field_id('show_byline'); ?>" type="checkbox"
+                          name="<?php echo $this->get_field_name('show_byline'); ?>"
+                          value="1" <?php checked(1, $instance['show_byline']); ?>/> <label
+                        for="<?php echo $this->get_field_id('show_byline'); ?>"><?php _e('Show Post Info', 'genesis'); ?></label>
+
+                    <input type="text" id="<?php echo $this->get_field_id('post_info'); ?>"
+                           name="<?php echo $this->get_field_name('post_info'); ?>"
+                           value="<?php echo esc_attr($instance['post_info']); ?>" class="widefat"/>
+
+                </p>
+
+                <p><label
+                        for="<?php echo $this->get_field_id('show_content'); ?>"><?php _e('Content Type', 'genesis'); ?>
+                        :</label>
+                    <select id="<?php echo $this->get_field_id('show_content'); ?>"
+                            name="<?php echo $this->get_field_name('show_content'); ?>">
+                        <option
+                            value="content" <?php selected('content', $instance['show_content']); ?>><?php _e('Show Content', 'genesis'); ?></option>
+                        <option
+                            value="excerpt" <?php selected('excerpt', $instance['show_content']); ?>><?php _e('Show Excerpt', 'genesis'); ?></option>
+                        <option
+                            value="content-limit" <?php selected('content-limit', $instance['show_content']); ?>><?php _e('Show Content Limit', 'genesis'); ?></option>
+                        <option
+                            value="" <?php selected('', $instance['show_content']); ?>><?php _e('No Content', 'genesis'); ?></option>
+                    </select>
+
+                    <br/><label
+                        for="<?php echo $this->get_field_id('content_limit'); ?>"><?php _e('Limit content to', 'genesis'); ?></label>
+                    <input type="text" id="<?php echo $this->get_field_id('image_alignment'); ?>"
+                           name="<?php echo $this->get_field_name('content_limit'); ?>"
+                           value="<?php echo esc_attr(intval($instance['content_limit'])); ?>"
+                           size="3"/> <?php _e('characters', 'genesis'); ?></p>
+
+                <p><label
+                        for="<?php echo $this->get_field_id('more_text'); ?>"><?php _e('More Text (if applicable)', 'genesis'); ?>
+                        :</label>
+                    <input type="text" id="<?php echo $this->get_field_id('more_text'); ?>"
+                           name="<?php echo $this->get_field_name('more_text'); ?>"
+                           value="<?php echo esc_attr($instance['more_text']); ?>"/></p>
+
+            </div>
+
+            <br/>
 
         </div>
 
-        <br/>
-
-    </div>
-
-<?php
-}
+    <?php
+    }
 
 }

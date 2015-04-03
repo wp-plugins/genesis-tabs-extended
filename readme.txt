@@ -3,15 +3,13 @@ Contributors: jvandemerwe
 Tags: tabs, ui-tabs, genesis, genesiswp, studiopress
 Requires at least: 3.7
 Tested up to: 3.7.1
-Stable tag: 1.1.1
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Extended version of the Genesis Tabs plugin from Studiopress. Make selected posts unique on the page. And more...
 
 == Description ==
-
-**** This version replaces version 1.1 and repairs an awful bug that broke proper working of this plugin ****
 
 Extended version of the Genesis Tabs plugin from Studiopress. Make selected posts unique on the page. And more...
 
@@ -70,12 +68,19 @@ Well that makes everything unique. But this is how it will work:
 * Tab 2 will show post D (for A is non display, B is in tab 1 and C is in non display)
 * Tab 3 will show nothing for there are no posts left to show
 
+= Select only posts with featured image? =
+
+When this option is selected only posts are selected that have a featured image. This option can be finetuned
+a little further with the "This also counts for the latest post?" option. If you have set in the first tab your most
+recent contribution (Option: Show most recent post in first tab ?), then you can exclude the featured image requirement
+for that tab.
+
 == Installation ==
 
 1. Upload the entire `genesis-tabs-extended` folder to the `/wp-content/plugins/` directory
-1. DO NOT change the name of the `genesis-tabs-extended` folder
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. In the "Widgets" screen, drag the "Genesis Tabs (extended)" widget to the widget area of your choice, and configure.
+2. DO NOT change the name of the `genesis-tabs-extended` folder
+3. Activate the plugin through the 'Plugins' menu in WordPress
+4. In the "Widgets" screen, drag the "Genesis Tabs (extended)" widget to the widget area of your choice, and configure.
 
 == Frequently Asked Questions ==
 
@@ -84,6 +89,10 @@ Well that makes everything unique. But this is how it will work:
 <a href="http://www.enovision.net/contact/">http://www.enovision.net/contact/</a> and drop your question.
 
 == Changelog ==
+
+= 1.2 =
+* Added the featured image required for selection option
+* Pimped the options page for the widget settings
 
 = 1.1.1 =
 * Solves a (breaking) bug that would lead to problems when there were no categories excluded. 
